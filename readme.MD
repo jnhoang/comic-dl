@@ -22,3 +22,4 @@ Combined from
 # Todo
 - [ ] - cleanup downloaded files once conversion is complete
 - [ ] - upload to dropbox
+  - `python3 merge.py -r ~/Dropbox/<FILE_NAME> <FILES_FOLDER_LOCATION>
