@@ -19,8 +19,8 @@ def get_url_domain(url):
 
   scheme, domain, path, query, fragment = urlsplit(url)
 
-  print('scheme: ', scheme)
-  print('domain: ', domain)
-  print('path: ', path)
+  # print('scheme: ', scheme)
+  # print('domain: ', domain)
+  # print('path: ', path)
 
   return domain

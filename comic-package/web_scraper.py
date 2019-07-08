@@ -1,4 +1,7 @@
 import cfscrape
+import requests
+
+
 
 class Scraper():
   def __init__(self):
@@ -18,3 +21,6 @@ class Scraper():
       return response
     except requests.exceptions.HTTPError as e:
       raise e
+
+
+  scrape_images
