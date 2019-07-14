@@ -5,19 +5,19 @@ from tempfile import TemporaryDirectory
 from natsort  import natsorted
 
 # package modules
-from utils        import is_url_valid, get_url_domain, create_and_change_dir
-from web_scraper  import Scraper
-from site_info    import SiteInfo
-from downloader   import Downloader
+from utils        import is_url_valid, get_url_domain
+from WebScraper   import Scraper
+from SiteInfo     import SiteInfo
+from FileManager  import FileManager
 
-site_info =  SiteInfo()
-scraper   =  Scraper()
-download_path = 'downloaded_comics'
 
+site_info    =  SiteInfo()
+scraper      =  Scraper()
+file_manager =  FileManager()
 
 def run():
   try:
-    command, url = sys.argv
+    command, url, filetype = sys.argv
   except ValueError as e:
     print(f'error: {e}\nto run: python3 comic_request.py website')
     return
@@ -27,10 +27,7 @@ def run():
   domain_settings =  site_info.get_domain_settings(domain)
 
   # build comic name
-  split_url    =  url.split('/')
-  comic_name   =  split_url[domain_settings['name_position']]
-  issue_number =  site_info.get_issue_number(split_url, domain)
-  filename     =  f'{comic_name}_{issue_number}.pdf'
+  title, issue_number, filename = get_comic_details(url, filetype, domain)
 
   # bypass bot-protection
   response = scraper.scrape_comic(url, antibot=domain_settings['antibot'])
@@ -39,8 +36,7 @@ def run():
   session     =  requests.Session()
   image_links =  site_info.get_image_links(response, domain_settings, session)
 
-  # regroup all the images into a list so we can sort them
-  # to avoid a bad pagination
+  # regroup images & sort to avoid a bad pagination
   unsorted_images =  [ image for image in glob.glob('image_files/*.jpg') ]
   images          =  natsorted(unsorted_images)
 
@@ -51,7 +47,7 @@ def run():
     for i, link in enumerate(image_links):
       response = session.get(link, stream=True)
 
-      with open(os.path.join(temp_dir, f'{i}.jpg'), 'wb') as f:
+      with open(os.path.join(temp_dir, f'{comic_name}_{issue_number}_{i}.jpg'), 'wb') as f:
         response.raw.decode_content = True
         shutil.copyfileobj(response.raw, f)
 
@@ -60,7 +56,11 @@ def run():
     unsorted_images =  [ image for image in glob.glob(f'{temp_dir}/*.jpg') ]
     images          =  natsorted(unsorted_images)
 
-    # create pdf/cbz here
+    # CREATE PDF/CBZ HERE
+    if filetype == 'pdf':
+      file_manager.create_pdf(filename, images)
+    elif filetype == 'cbz':
+      file_manager.create_cbz(filename)
 
     print('Comic successfully downloaded')
 
