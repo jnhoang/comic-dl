@@ -31,12 +31,9 @@ def run():
   response = scraper.scrape_comic(url, antibot=domain_settings['antibot'])
   print(response)
 
-
-  # TBD - DOES THIS NEXT STEP (FUNCTION) BELONG IN SCRAPER?
-  # function = get_image_links()? (currently in SiteInfo)
-
   # handoff to corresponding site-parser, returns array of image links
-  # image_links = site_info.get_image_links(url)
+  image_links = site_info.get_image_links(response, domain_settings)
+
 
   # # retrieve all the images links to download
   # # session = requests.Session()

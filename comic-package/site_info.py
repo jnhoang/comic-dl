@@ -8,7 +8,6 @@ from utils import is_url_valid
 class SiteInfo():
 
   def __init__(self):
-    self.value = 'high'
     self.site_settings = {
       'comicextra' : {
         'domain'      :  'www.comicextra.com',
@@ -41,9 +40,21 @@ class SiteInfo():
     }
 
 
-  def get_image_links(self, url):
-    print('get_image_links')
-    return url
+  def get_image_links(self, response, domain_settings):
+    domain = domain_settings['domain']
+
+    if domain == self.site_settings['mangahere']['domain']:
+      image_links =  mangahere_images_links(response)
+    elif domain == self.site_settings['mangareader']['domain']:
+      image_links = mangareader_images_links(response)
+    else:
+      session =  requests.Session()
+      html    =  BeautifulSoup(response.content, 'html.parser')
+
+      image_html_links =  re.findall(domain_settings['image_regex'], str(html))
+      image_links      =  [ link for link in image_html_links if is_url_valid(link)]
+
+    return image_links
 
 
   def get_domain_settings(self, domain):

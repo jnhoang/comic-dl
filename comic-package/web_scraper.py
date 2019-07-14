@@ -22,5 +22,3 @@ class Scraper():
     except requests.exceptions.HTTPError as e:
       raise e
 
-
-  scrape_images
