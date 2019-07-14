@@ -13,7 +13,6 @@ class SiteInfo():
         'domain'         :  'www.comicextra.com',
         'image_regex'    :  '<img[^>]+src="([^">]+)"',
         'antibot'        :  False,
-        'filepath'       :  'comicextra',
         'name_position'  :  3,
         'issue_position' :  4,
       },
@@ -22,7 +21,6 @@ class SiteInfo():
         'base_url'       :  'http://www.mangahere.cc/',
         'image_regex'    :  r'<img[^>]+src="([^">]+)"',
         'antibot'        :  False,
-        'filepath'       :  'mangahere',
         'name_position'  :  4,
         'issue_position' :  5,
       },
@@ -31,7 +29,6 @@ class SiteInfo():
         'base_url'       :  'https://www.mangareader.net',
         'image_regex'    :  '<img[^>]+src="([^">]+)"',
         'antibot'        :  False,
-        'filepath'       :  'mangareader',
         'name_position'  :  3,
         'issue_position' :  4,
       },
@@ -39,14 +36,22 @@ class SiteInfo():
         'domain'        :  'readcomiconline.to',
         'image_regex'   :  r'stImages.push\(\"(.*?)\"\)\;',
         'antibot'       :  True,
-        'filepath'      :  'read_comic_online',
         'name_position' :  4,
         'issue_regex'   :  r'[(\d)]+',
       },
     }
 
+
+  def get_comic_details(self, url, filetype, domain_settings):
+    split_url    =  url.split('/')
+    comic_name   =  split_url[domain_settings['name_position']]
+    issue_number =  self.get_issue_number(split_url, domain_settings['domain'])
+    filename     =  f'{comic_name}_{issue_number}.{filetype}'
+
+    return [comic_name, issue_number, filename]
+
+
   def get_issue_number(self, split_url, domain):
-    print('domain: ', domain)
     if domain == 'readcomiconline.to':
       regex        =  self.site_settings['read_comic_online']['issue_regex']
       issue_number =  re.findall(regex, split_url[5])[0]

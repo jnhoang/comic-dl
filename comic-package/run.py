@@ -1,7 +1,5 @@
 # pip modules
-import os, sys, shutil, glob, requests
-
-from tempfile import TemporaryDirectory
+import os, sys, glob, requests
 from natsort  import natsorted
 
 # package modules
@@ -27,42 +25,30 @@ def run():
   domain_settings =  site_info.get_domain_settings(domain)
 
   # build comic name
-  title, issue_number, filename = get_comic_details(url, filetype, domain)
+  comic_name, issue_number, filename = site_info.get_comic_details(url, filetype, domain_settings)
 
-  # bypass bot-protection
-  response = scraper.scrape_comic(url, antibot=domain_settings['antibot'])
+  # # bypass bot-protection
+  # response = scraper.scrape_comic(url, antibot=domain_settings['antibot'])
 
-  # handoff to corresponding site-parser, returns array of image links
-  session     =  requests.Session()
-  image_links =  site_info.get_image_links(response, domain_settings, session)
+  # # handoff to corresponding site-parser, returns array of image links
+  # session     =  requests.Session()
+  # image_links =  site_info.get_image_links(response, domain_settings, session)
+
+  # # download images
+  # scraper.download_images(comic_name, issue_number, image_links, session)
 
   # regroup images & sort to avoid a bad pagination
-  unsorted_images =  [ image for image in glob.glob('image_files/*.jpg') ]
+  unsorted_images = os.listdir(os.path.join(os.getcwd(), file_manager.download_dir, file_manager.temp_dir))
   images          =  natsorted(unsorted_images)
 
+  # CREATE PDF/CBZ HERE
+  if filetype == 'pdf':
+    file_manager.create_pdf(filename, images)
+  elif filetype == 'cbz':
+    file_manager.create_cbz(filename, images)
 
-  # download images
-  with TemporaryDirectory() as temp_dir:
-
-    for i, link in enumerate(image_links):
-      response = session.get(link, stream=True)
-
-      with open(os.path.join(temp_dir, f'{comic_name}_{issue_number}_{i}.jpg'), 'wb') as f:
-        response.raw.decode_content = True
-        shutil.copyfileobj(response.raw, f)
-
-    # regroup all the images into a list so we can sort them
-    # to avoid a bad pagination
-    unsorted_images =  [ image for image in glob.glob(f'{temp_dir}/*.jpg') ]
-    images          =  natsorted(unsorted_images)
-
-    # CREATE PDF/CBZ HERE
-    if filetype == 'pdf':
-      file_manager.create_pdf(filename, images)
-    elif filetype == 'cbz':
-      file_manager.create_cbz(filename)
-
-    print('Comic successfully downloaded')
+  file_manager.remove_temp_dir()
+  print('Comic successfully downloaded')
 
 
 
