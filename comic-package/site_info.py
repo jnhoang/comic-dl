@@ -10,34 +10,49 @@ class SiteInfo():
   def __init__(self):
     self.site_settings = {
       'comicextra' : {
-        'domain'      :  'www.comicextra.com',
-        'image_regex' :  '<img[^>]+src="([^">]+)"',
-        'antibot'     :  False,
+        'domain'         :  'www.comicextra.com',
+        'image_regex'    :  '<img[^>]+src="([^">]+)"',
+        'antibot'        :  False,
+        'filepath'       :  'downloaded.comicextra',
+        'name_position'  :  3,
+        'issue_position' :  4,
       },
       'mangahere' : {
-        'domain'      :  'www.mangahere.cc',
-        'base_url'    :  'http://www.mangahere.cc/',
-        'image_regex' :  r'<img[^>]+src="([^">]+)"',
-        'antibot'     :  False,
+        'domain'         :  'www.mangahere.cc',
+        'base_url'       :  'http://www.mangahere.cc/',
+        'image_regex'    :  r'<img[^>]+src="([^">]+)"',
+        'antibot'        :  False,
+        'filepath'       :  'downloaded.mangahere',
+        'name_position'  :  4,
+        'issue_position' :  5,
       },
       'mangareader' : {
-        'domain'      :  'www.mangareader.net',
-        'base_url'    :  'https://www.mangareader.net',
-        'image_regex' :  '<img[^>]+src="([^">]+)"',
-        'antibot'     :  False,
+        'domain'         :  'www.mangareader.net',
+        'base_url'       :  'https://www.mangareader.net',
+        'image_regex'    :  '<img[^>]+src="([^">]+)"',
+        'antibot'        :  False,
+        'filepath'       :  'downloaded.mangareader',
+        'name_position'  :  3,
+        'issue_position' :  4,
       },
       'read_comic_online' : {
-        'domain'             :  'readcomiconline.to',
-        'issue_number_regex' :  r'[(\d)]+',
-        'image_regex'        :  r'stImages.push\(\"(.*?)\"\)\;',
-        'antibot'            :  True,
-      },
-      'read_comics_io' : {
-        'domain'      :  'readcomics.io',
-        'image_regex' :  '<img[^>]+src="([^">]+)"',
-        'antibot'     :  False,
+        'domain'        :  'readcomiconline.to',
+        'image_regex'   :  r'stImages.push\(\"(.*?)\"\)\;',
+        'antibot'       :  True,
+        'filepath'      :  'downloaded.read_comic_online',
+        'name_position' :  4,
+        'issue_regex'   :  r'[(\d)]+',
       },
     }
+
+  def get_issue_number(self, split_url, domain):
+    if domain == 'read_comic_online':
+      regex        =  self.site_settings[domain][issue_regex]
+      issue_number =  re.findall(regex, split_url[5])[0]
+    else:
+      issue_number = split_url[self.site_settings[domain][issue_position]]
+
+    return issue_number
 
 
   def get_image_links(self, response, domain_settings):
