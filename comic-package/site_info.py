@@ -13,7 +13,7 @@ class SiteInfo():
         'domain'         :  'www.comicextra.com',
         'image_regex'    :  '<img[^>]+src="([^">]+)"',
         'antibot'        :  False,
-        'filepath'       :  'downloaded.comicextra',
+        'filepath'       :  'comicextra',
         'name_position'  :  3,
         'issue_position' :  4,
       },
@@ -22,7 +22,7 @@ class SiteInfo():
         'base_url'       :  'http://www.mangahere.cc/',
         'image_regex'    :  r'<img[^>]+src="([^">]+)"',
         'antibot'        :  False,
-        'filepath'       :  'downloaded.mangahere',
+        'filepath'       :  'mangahere',
         'name_position'  :  4,
         'issue_position' :  5,
       },
@@ -31,7 +31,7 @@ class SiteInfo():
         'base_url'       :  'https://www.mangareader.net',
         'image_regex'    :  '<img[^>]+src="([^">]+)"',
         'antibot'        :  False,
-        'filepath'       :  'downloaded.mangareader',
+        'filepath'       :  'mangareader',
         'name_position'  :  3,
         'issue_position' :  4,
       },
@@ -39,15 +39,16 @@ class SiteInfo():
         'domain'        :  'readcomiconline.to',
         'image_regex'   :  r'stImages.push\(\"(.*?)\"\)\;',
         'antibot'       :  True,
-        'filepath'      :  'downloaded.read_comic_online',
+        'filepath'      :  'read_comic_online',
         'name_position' :  4,
         'issue_regex'   :  r'[(\d)]+',
       },
     }
 
   def get_issue_number(self, split_url, domain):
-    if domain == 'read_comic_online':
-      regex        =  self.site_settings[domain][issue_regex]
+    print('domain: ', domain)
+    if domain == 'readcomiconline.to':
+      regex        =  self.site_settings['read_comic_online']['issue_regex']
       issue_number =  re.findall(regex, split_url[5])[0]
     else:
       issue_number = split_url[self.site_settings[domain][issue_position]]
@@ -55,7 +56,7 @@ class SiteInfo():
     return issue_number
 
 
-  def get_image_links(self, response, domain_settings):
+  def get_image_links(self, response, domain_settings, session):
     domain = domain_settings['domain']
 
     if domain == self.site_settings['mangahere']['domain']:
@@ -63,7 +64,6 @@ class SiteInfo():
     elif domain == self.site_settings['mangareader']['domain']:
       image_links = mangareader_images_links(response)
     else:
-      session =  requests.Session()
       html    =  BeautifulSoup(response.content, 'html.parser')
 
       image_html_links =  re.findall(domain_settings['image_regex'], str(html))
