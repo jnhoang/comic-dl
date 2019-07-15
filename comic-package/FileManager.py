@@ -5,9 +5,9 @@ from zipfile  import ZipFile
 
 class FileManager():
   def __init__(self):
-    self.download_dir =  'downloaded'
-    self.temp_dir     =  'temp_dir'
-
+    self.download_dir   =  'downloaded'
+    self.temp_dir       =  'temp_dir'
+    self.full_temp_path =  f'{self.download_dir}/{self.temp_dir}'
 
   def create_and_change_dir(self, dir_name=None):
     """
@@ -19,6 +19,10 @@ class FileManager():
         os.mkdir(dir_name)
 
     os.chdir(dir_name)
+
+
+  def create_temp_dir(self):
+    os.mkdir(self.full_temp_path)
 
 
   def create_pdf(self, filename, images):
@@ -35,4 +39,4 @@ class FileManager():
 
 
   def remove_temp_dir(self):
-    shutil.rmtree(os.path.join(self.download_dir, self.temp_dir))
+    shutil.rmtree(self.full_temp_path)

@@ -39,8 +39,7 @@ def run():
   scraper.download_images(comic_name, issue_number, image_links, session)
 
   # regroup images & sort to avoid a bad pagination
-  images_location =  os.path.join(file_manager.download_dir, file_manager.temp_dir)
-  unsorted_images =  [ image for image in glob.glob(f'{images_location}/*.jpg') ]
+  unsorted_images =  [ image for image in glob.glob(f'{file_manager.full_temp_path}/*.jpg') ]
   images          =  natsorted(unsorted_images)
 
   # create pdf/cbz

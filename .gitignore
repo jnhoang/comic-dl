@@ -2,6 +2,5 @@
 venv
 comics/*
 output/*
-comics-downloader
 downloaded/
 __pycache__

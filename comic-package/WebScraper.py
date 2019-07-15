@@ -2,11 +2,11 @@ import os, shutil, requests
 import cfscrape
 
 from FileManager import FileManager
+file_manager =  FileManager()
 
 class Scraper():
   def __init__(self):
-    self.scraper      =  cfscrape.create_scraper()
-    self.file_manager =  FileManager()
+    self.scraper =  cfscrape.create_scraper()
 
   def scrape_comic(self, url, antibot):
     # Get page raw content
@@ -23,15 +23,12 @@ class Scraper():
       raise e
 
   def download_images(self, comic_name, issue_number, image_links, session):
-    self.file_manager.create_and_change_dir(self.file_manager.download_dir)
-    self.file_manager.create_and_change_dir(self.file_manager.temp_dir)
+    file_manager.create_temp_dir()
 
     for i, link in enumerate(image_links):
       response   =  session.get(link, stream=True)
       image_name =  f'{comic_name}_{issue_number}_{i}.jpg'
 
-      with open(image_name, 'wb') as file:
+      with open(os.path.join(file_manager.full_temp_path, image_name), 'wb') as file:
         response.raw.decode_content = True
         shutil.copyfileobj(response.raw, file)
-
-    os.chdir('../..')
