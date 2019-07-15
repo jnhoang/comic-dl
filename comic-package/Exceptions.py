@@ -1,0 +1,2 @@
+Class SiteNotSupported(Exception):
+  pass

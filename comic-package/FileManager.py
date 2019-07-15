@@ -9,12 +9,7 @@ class FileManager():
     self.temp_dir       =  'temp_dir'
     self.full_temp_path =  f'{self.download_dir}/{self.temp_dir}'
 
-  def create_and_change_dir(self, dir_name=None):
-    """
-      :param string dir_name: is the folder name.
-      create a directory if does not exist and change to it
-    """
-    dir_name = self.download_dir if dir_name == None else dir_name
+  def create_and_change_dir(self, dir_name):
     if not os.path.exists(dir_name):
         os.mkdir(dir_name)
 
