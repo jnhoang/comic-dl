@@ -1,5 +1,7 @@
 import os, shutil
+import img2pdf
 from zipfile  import ZipFile
+
 
 class FileManager():
   def __init__(self):
@@ -20,7 +22,6 @@ class FileManager():
 
 
   def create_pdf(self, filename, images):
-    # create the pdf file from the images
     file_location = os.path.join(self.download_dir, filename)
     with open(file_location, 'wb') as f:
       f.write(img2pdf.convert(images))
@@ -29,10 +30,9 @@ class FileManager():
   def create_cbz(self, filename, images):
     file_location = os.path.join(self.download_dir, filename)
     with ZipFile(file_location, 'w') as cbz_zip:
-      os.chdir(os.path.join(self.download_dir, self.temp_dir))
       for image in images:
         cbz_zip.write(image)
-      os.chdir('../..')
+
 
   def remove_temp_dir(self):
     shutil.rmtree(os.path.join(self.download_dir, self.temp_dir))

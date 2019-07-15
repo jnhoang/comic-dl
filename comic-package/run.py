@@ -8,10 +8,11 @@ from WebScraper   import Scraper
 from SiteInfo     import SiteInfo
 from FileManager  import FileManager
 
-
 site_info    =  SiteInfo()
 scraper      =  Scraper()
 file_manager =  FileManager()
+
+
 
 def run():
   try:
@@ -27,29 +28,30 @@ def run():
   # build comic name
   comic_name, issue_number, filename = site_info.get_comic_details(url, filetype, domain_settings)
 
-  # # bypass bot-protection
-  # response = scraper.scrape_comic(url, antibot=domain_settings['antibot'])
+  # bypass bot-protection
+  response = scraper.scrape_comic(url, antibot=domain_settings['antibot'])
 
-  # # handoff to corresponding site-parser, returns array of image links
-  # session     =  requests.Session()
-  # image_links =  site_info.get_image_links(response, domain_settings, session)
+  # handoff to corresponding site-parser, returns array of image links
+  session     =  requests.Session()
+  image_links =  site_info.get_image_links(response, domain_settings, session)
 
-  # # download images
-  # scraper.download_images(comic_name, issue_number, image_links, session)
+  # download images
+  scraper.download_images(comic_name, issue_number, image_links, session)
 
   # regroup images & sort to avoid a bad pagination
-  unsorted_images = os.listdir(os.path.join(os.getcwd(), file_manager.download_dir, file_manager.temp_dir))
+  images_location =  os.path.join(file_manager.download_dir, file_manager.temp_dir)
+  unsorted_images =  [ image for image in glob.glob(f'{images_location}/*.jpg') ]
   images          =  natsorted(unsorted_images)
 
-  # CREATE PDF/CBZ HERE
+  # create pdf/cbz
   if filetype == 'pdf':
     file_manager.create_pdf(filename, images)
   elif filetype == 'cbz':
     file_manager.create_cbz(filename, images)
 
+  # cleanup
   file_manager.remove_temp_dir()
   print('Comic successfully downloaded')
-
 
 
 if __name__ == "__main__":

@@ -2,8 +2,6 @@ import os, sys
 import validators
 from urllib.parse import urlsplit
 
-import img2pdf
-
 
 def is_url_valid(url):
   """
