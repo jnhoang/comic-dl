@@ -11,7 +11,7 @@ class FileManager():
 
   def create_and_change_dir(self, dir_name):
     if not os.path.exists(dir_name):
-        os.mkdir(dir_name)
+      os.mkdir(dir_name)
 
     os.chdir(dir_name)
 
@@ -20,18 +20,27 @@ class FileManager():
     os.mkdir(self.full_temp_path)
 
 
-  def create_pdf(self, filename, images):
-    file_location = os.path.join(self.download_dir, filename)
-    with open(file_location, 'wb') as f:
+  def create_and_get_series_dir(self, comic_name):
+    series_dir = os.path.join(self.download_dir, comic_name)
+    if not os.path.exists(series_dir):
+      os.mkdir(series_dir)
+
+
+  def get_download_location(self, series_dir, filename):
+    return os.path.join(self.download_dir, series_dir, filename)
+
+
+  def create_pdf(self, download_location, images):
+    with open(download_location, 'wb') as f:
       f.write(img2pdf.convert(images))
 
 
-  def create_cbz(self, filename, images):
-    file_location = os.path.join(self.download_dir, filename)
-    with ZipFile(file_location, 'w') as cbz_zip:
+  def create_cbz(self, download_location, images):
+    with ZipFile(download_location, 'w') as f:
       for image in images:
-        cbz_zip.write(image)
+        f.write(image)
 
 
   def remove_temp_dir(self):
     shutil.rmtree(self.full_temp_path)
+

@@ -42,11 +42,15 @@ def run():
   unsorted_images =  [ image for image in glob.glob(f'{file_manager.full_temp_path}/*.jpg') ]
   images          =  natsorted(unsorted_images)
 
+  # separate downloads into individual dirs
+  series_dir        =  file_manager.create_and_get_series_dir(comic_name)
+  download_location =  file_manager.get_download_location(series_dir, filename)
+
   # create pdf/cbz
   if filetype == 'pdf':
-    file_manager.create_pdf(filename, images)
+    file_manager.create_pdf(download_location, images)
   elif filetype == 'cbz':
-    file_manager.create_cbz(filename, images)
+    file_manager.create_cbz(download_location, images)
 
   # cleanup
   file_manager.remove_temp_dir()
