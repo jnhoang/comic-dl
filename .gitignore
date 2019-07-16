@@ -4,3 +4,4 @@ comics/*
 output/*
 downloaded/
 __pycache__
+*.pyc

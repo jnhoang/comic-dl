@@ -3,15 +3,15 @@ import os, sys, glob, requests
 from natsort  import natsorted
 
 # package modules
-from utils        import is_url_valid, get_url_domain
-from WebScraper   import Scraper
-from SiteInfo     import SiteInfo
-from FileManager  import FileManager
+from comic_downloader.WebScraper   import WebScraper
+from comic_downloader.SiteInfo     import SiteInfo
+from comic_downloader.FileManager  import FileManager
+from comic_downloader.Utils        import Utils
 
 site_info    =  SiteInfo()
-scraper      =  Scraper()
+scraper      =  WebScraper()
 file_manager =  FileManager()
-
+utils        =  Utils()
 
 
 def run():
@@ -22,7 +22,7 @@ def run():
     return
 
   # figure out which site settings to use
-  domain          =  get_url_domain(url)
+  domain          =  utils.get_url_domain(url)
   domain_settings =  site_info.get_domain_settings(domain)
 
   # build comic name

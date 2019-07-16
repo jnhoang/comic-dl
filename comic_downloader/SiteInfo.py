@@ -2,7 +2,8 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-from utils import is_url_valid
+from comic_downloader.Utils import Utils
+utils = Utils()
 
 
 class SiteInfo():
@@ -72,7 +73,7 @@ class SiteInfo():
       html    =  BeautifulSoup(response.content, 'html.parser')
 
       image_html_links =  re.findall(domain_settings['image_regex'], str(html))
-      image_links      =  [ link for link in image_html_links if is_url_valid(link)]
+      image_links      =  [ link for link in image_html_links if utils.is_url_valid(link)]
 
     return image_links
 
@@ -98,7 +99,7 @@ class SiteInfo():
       response  =  session.get(link)
       image_url =  re.findall(regex, response.text)[1]
 
-      if is_url_valid(image_url):
+      if utils.is_url_valid(image_url):
         images_links.append(image_url)
 
     return images_links
@@ -119,7 +120,7 @@ class SiteInfo():
 
       # we'll find only 1 image
       image_url = re.findall(setting['image_regex'], response.text)[0]
-      if is_url_valid(image_url):
+      if utils.is_url_valid(image_url):
         images_links.append(image_url)
 
     return images_links

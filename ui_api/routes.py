@@ -1,7 +1,7 @@
-from flask import Flask
-app = Flask(__name__)
+from flask import Blueprint
 
 
+routes = Blueprint('routes', __name__)
 # get list of website urls
 # loop through each and run comic-package up to grabbing the image links
 # image links are stored in array and sent to ui
@@ -16,18 +16,20 @@ app = Flask(__name__)
 # endpoints
   # home - render ui
   # get_image_links - ['url', 'url', ...]
+    # request - sent with a bunch of urls
+    # process urls
+    # response = {
+    #   'data': [ {'url', 'comic_name', 'issue_number', 'image_links' : [] }, {} ]
+    # }
   # download_files - [{comic_name:'', issue_number:'', images:[]}]
 
-@app.route("/")
-@app.route("/home")
+@routes.route("/")
+@routes.route("/home")
 def home():
   return 'hello'
 
 
-@app.route("/about")
+@routes.route("/get_image_links")
 def about():
   return 'about page'
 
-
-if __name__ == '__main__':
-  app.run(debug=True, port=5270)

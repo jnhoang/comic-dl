@@ -1,10 +1,10 @@
 import os, shutil, requests
 import cfscrape
 
-from FileManager import FileManager
+from comic_downloader.FileManager import FileManager
 file_manager =  FileManager()
 
-class Scraper():
+class WebScraper():
   def __init__(self):
     self.scraper =  cfscrape.create_scraper()
 
