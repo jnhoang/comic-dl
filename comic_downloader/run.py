@@ -14,6 +14,34 @@ file_manager =  FileManager()
 utils        =  Utils()
 
 
+def get_comic_info(url, filetype):
+
+  # figure out which site settings to use
+  domain          =  utils.get_url_domain(url)
+  domain_settings =  site_info.get_domain_settings(domain)    # TBD - try/catch site
+
+  # comic details (returns comic_name, issue_number, filename)
+  comic_name, issue_number, filename = site_info.get_comic_details(url, filetype, domain_settings)
+
+  return {
+    'domain_settings' :  domain_settings,
+    'comic_name'      :  comic_name,
+    'issue_number'    :  issue_number,
+    'filename'        :  filename,
+  }
+
+
+
+def get_images(url, domain_settings):
+  # bypass bot-protection
+  response = scraper.scrape_comic(url, antibot=domain_settings['antibot'])
+
+  # handoff to corresponding site-parser, returns array of image links
+  session     =  requests.Session()
+  image_links =  site_info.get_image_links(response, domain_settings, session)
+
+  return image_links
+
 def run():
   try:
     command, url, filetype = sys.argv
