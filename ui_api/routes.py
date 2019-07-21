@@ -1,5 +1,5 @@
 from flask import Blueprint, request, make_response
-from comic_downloader.run import get_comic_info, get_images
+from comic_downloader.run import run, get_comic_info, get_images
 
 routes = Blueprint('routes', __name__)
 # get list of website urls
@@ -23,16 +23,8 @@ def home():
   return 'hello'
 
 
-@routes.route('/get_image_links/', methods=['POST'])
-@routes.route('/get_image_links',  methods=['POST'])
-def get_image_links():
-  # get_image_links - ['url', 'url', ...]
-    # request - sent with a bunch of urls
-    # process urls
-    # response = {
-    #   'data': [ {'url', 'comic_name', 'issue_number', 'image_links' : [] }, {} ]
-    # }
-
+@routes.route('/get_comic_info', methods=['POST'])
+def get_comic_info():
   payload    =  request.get_json()
   comic_link =  payload['comic_link']
   filetype   =  payload['filetype']
@@ -46,6 +38,14 @@ def get_image_links():
     "comic_name"   :  comic_info['comic_name'],
     "image_links"  :  image_links,
   }
+
   return make_response(response)
 
 
+@routes.route('/dl-direct', methods=['POST'])
+def download_direct():
+  payload    =  request.get_json()
+  comic_link =  payload['comic_link']
+  filetype   =  payload['filetype']
+
+  run('foobar', comic_link, filetype)

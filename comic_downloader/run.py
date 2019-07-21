@@ -42,12 +42,16 @@ def get_images(url, domain_settings):
 
   return image_links
 
-def run():
-  try:
-    command, url, filetype = sys.argv
-  except ValueError as e:
-    print(f'error: {e}\nto run: python3 comic_request.py website')
-    return
+
+
+
+
+def run(_, url, filetype):
+  # try:
+  #   command, url, filetype = sys.argv
+  # except ValueError as e:
+  #   print(f'error: {e}\nto run: python3 comic_request.py website')
+  #   return
 
   # figure out which site settings to use
   domain          =  utils.get_url_domain(url)
@@ -62,7 +66,7 @@ def run():
   # handoff to corresponding site-parser, returns array of image links
   session     =  requests.Session()
   image_links =  site_info.get_image_links(response, domain_settings, session)
-
+  print(image_links)
   # download images
   scraper.download_images(comic_name, issue_number, image_links, session)
 
