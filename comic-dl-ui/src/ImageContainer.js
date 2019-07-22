@@ -76,18 +76,52 @@ class ImageContainer extends Component {
   }
 
 
-  handleSubmit = () => {
+  handleSubmit = async() => {
     const selectedImages = this.state.imageLinks.filter( (link) => link.selected )
+    .map( links => links.url)
     print(selectedImages)
+    const payload = {
+      "comic_link": "https://readcomiconline.to/Comic/The-Walking-Dead/Issue-177",
+      "comic_name": "test",
+      "issue_number": "1",
+      "filetype": "cbz",
+      "image_links": ["https://c2.staticflickr.com/9/8817/28973449265_07e3aa5d2e_b.jpg", "https://c2.staticflickr.com/9/8356/28897120681_3b2c0f43e0_b.jpg", "https://c4.staticflickr.com/9/8887/28897124891_98c4fdd82b_b.jpg"]
+    }
+    try {
+      const response = await fetch('http://localhost:56029/download', {
+        method :  'POST',
+        body   :  JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' }
+      })
+      const data = await response.blob()
+      this.setState({download: URL.createObjectURL(new Blob([data]))})
+      print('data: ', data)
+      // const url = window.URL.createObjectURL(new Blob([data]));
+      // const link = document.createElement('a');
+      // link.href = url;
+      // link.setAttribute('download', `sample.cbz`);
+
+      // 3. Append to html page
+      // document.body.appendChild(link);
+      // 4. Force download
+      // link.click();
+      // 5. Clean up and remove the link
+      // link.parentNode.removeChild(link);
+
+    }
+    catch(e) {
+      print('error: ', e)
+    }
 
   }
 
   render = () => {
-    const { imageLinks, imageStyle, addNewBoxStyle } = this.state;
+    const { imageLinks, imageStyle, addNewBoxStyle, download } = this.state;
     return (
       <div>
         <Row>
-          <Col
+          { download && <a href={download} download={'test.cbz'} target="_blank">Download</a>}
+        <Col
             xs={12}  sm={4}  md={3}
             style     =  {addNewBoxStyle}
             className =  "d-flex align-items-center justify-content-center flex-column flex-wrap" >

@@ -43,6 +43,30 @@ def get_images(url, domain_settings):
   return image_links
 
 
+def download_comic(comic_name, issue_number, image_links, session, filetype, filename):
+  print('comic_name: ', comic_name)
+  print('issue_number: ', issue_number)
+  print('image_links: ', len(image_links))
+  # download images
+  scraper.download_images(comic_name, issue_number, image_links, session)
+
+  # regroup images & sort to avoid a bad pagination
+  unsorted_images =  [ image for image in glob.glob(f'{file_manager.full_temp_path}/*.jpg') ]
+  images          =  natsorted(unsorted_images)
+
+  # separate downloads into individual dirs
+  series_dir        =  file_manager.create_and_get_series_dir(comic_name)
+  print('series_dir: ', series_dir)
+  download_location =  file_manager.get_download_location(series_dir, filename)
+  print('download_location: ', download_location)
+
+  # create pdf/cbz
+  if filetype == 'pdf':
+    file_manager.create_pdf(download_location, images)
+  elif filetype == 'cbz':
+    file_manager.create_cbz(download_location, images)
+
+  return download_location
 
 
 
@@ -66,7 +90,7 @@ def run(_, url, filetype):
   # handoff to corresponding site-parser, returns array of image links
   session     =  requests.Session()
   image_links =  site_info.get_image_links(response, domain_settings, session)
-  print(image_links)
+
   # download images
   scraper.download_images(comic_name, issue_number, image_links, session)
 

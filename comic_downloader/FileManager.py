@@ -17,17 +17,18 @@ class FileManager():
 
 
   def create_temp_dir(self):
-    os.mkdir(self.full_temp_path)
+    if not os.path.exists(self.full_temp_path):
+      os.mkdir(self.full_temp_path)
 
 
   def create_and_get_series_dir(self, comic_name):
     series_dir = os.path.join(self.download_dir, comic_name)
     if not os.path.exists(series_dir):
       os.mkdir(series_dir)
-
+    return series_dir
 
   def get_download_location(self, series_dir, filename):
-    return os.path.join(self.download_dir, series_dir, filename)
+    return os.path.join(series_dir, filename)
 
 
   def create_pdf(self, download_location, images):

@@ -1,6 +1,5 @@
 import React      from 'react';
 import Container  from 'react-bootstrap/Container'
-import            Row from 'react-bootstrap/Row'
 
 import ImageContainer from './ImageContainer'
 
@@ -21,11 +20,24 @@ const App = () => {
       <header className="App-header">
         This is the header
       </header>
-      <Row>
-        <ImageContainer
-          imageLinks = {imageLinks}
-        />
-      </Row>
+
+      {/*
+        INPUT PROCESSOR (ENTER COMIC LINK HERE)
+        MAKE REQUEST TO /get_comic_info
+
+          return {
+            url,
+            issue_number,
+            comic_name,
+            image_links
+          }
+        ImageContainer
+          handles image editing
+          rerender?
+          will send download reques
+      */}
+
+      <ImageContainer imageLinks = {imageLinks} />
 
     </Container>
   );

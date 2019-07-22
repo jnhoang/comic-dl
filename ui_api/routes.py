@@ -1,5 +1,7 @@
-from flask import Blueprint, request, make_response
-from comic_downloader.run import run, get_comic_info, get_images
+import os
+from flask import Blueprint, request, make_response, send_file
+from comic_downloader.run import run, get_comic_info, get_images, download_comic
+import requests
 
 routes = Blueprint('routes', __name__)
 # get list of website urls
@@ -20,7 +22,7 @@ routes = Blueprint('routes', __name__)
 @routes.route("/")
 @routes.route("/home")
 def home():
-  return 'hello'
+  return make_response({'hello': 'hi'})
 
 
 @routes.route('/get_comic_info', methods=['POST'])
@@ -41,6 +43,22 @@ def get_comic_info():
 
   return make_response(response)
 
+@routes.route('/download', methods=['POST'])
+def download():
+  payload      =  request.get_json()
+  comic_name   =  payload['comic_name']
+  issue_number =  payload['issue_number']
+  image_links  =  payload['image_links']
+
+  session  =  requests.Session()
+  download_location =  download_comic(comic_name, issue_number, image_links, session, filetype='cbz', filename='foo.cbz')
+  # download_location = os.path.join('..', download_location)
+  print('download_location:', download_location)
+  # return make_response(download_location)
+  return send_file(f'../{download_location}')
+
+
+
 
 @routes.route('/dl-direct', methods=['POST'])
 def download_direct():
@@ -49,3 +67,4 @@ def download_direct():
   filetype   =  payload['filetype']
 
   run('foobar', comic_link, filetype)
+  return

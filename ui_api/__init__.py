@@ -1,5 +1,5 @@
 from flask import Flask
-
+from flask_cors import CORS
 from comic_downloader import run
 # import logging
 # from pythonjsonlogger        import jsonlogger
@@ -19,7 +19,7 @@ from comic_downloader import run
 
 def create_app():
   app = Flask(__name__)
-
+  CORS(app)
   # REGISTER BLUEPRINTS
   from ui_api.routes import routes
 
