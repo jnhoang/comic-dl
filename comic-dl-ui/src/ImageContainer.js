@@ -1,9 +1,24 @@
 import React, { Component } from 'react'
+import Radium   from 'radium'
 import Image    from 'react-bootstrap/Image'
 import Col      from 'react-bootstrap/Col'
-import Radium   from 'radium'
+import Row      from 'react-bootstrap/Row'
+import Button   from 'react-bootstrap/Button'
 
+import {
+  faCheckCircle,
+  faPlusCircle
+} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const print = console.log;
+
+const ICON_STYLE = {
+  'color'    :  'gray',
+  'position' :  'absolute',
+  'padding'  :  '10px 0 0 10px',
+  'height'   :  '1.75em',
+  'width'    :  '1.75em',
+};
 
 class ImageContainer extends Component {
   state = {
@@ -24,78 +39,106 @@ class ImageContainer extends Component {
     }
   }
 
-  componentDidMount = async() => {
-    const { imageLinks }  =  this.props;
-    const selectIconStyle =  {
-      'color'    :  'gray',
-      'position' :  'absolute',
-      'padding'  :  '10px 0 0 10px'
-    };
-    const imageIdMappedToState = imageLinks
-      .map( (link) => (
+  componentDidMount = () => {
+    const { imageLinks }     =  this.props;
+    const imagesToMapToState =  imageLinks.map( (link) => (
         {
-          'url': link,
-          'iconStyle': { ...selectIconStyle }
+          'url'       :  link,
+          'iconStyle' :  { ...ICON_STYLE },
+          'selected'  :  false,
         }
       ));
 
-    await this.setState({imageLinks: imageIdMappedToState});
-    print(this.state)
+    this.setState({ imageLinks: imagesToMapToState });
   }
-  handleClick = (i, iStyle) => {
-    const { imageLinks } =  this.state;
-    const color          =  imageLinks[i].iconStyle.color === 'limegreen' ? 'white' : 'limegreen';
-    imageLinks[i].iconStyle  = { ...iStyle, color }
 
+
+  handleClick = (i) => {
+    const { imageLinks }  =  this.state;
+    const oldStyle        =  imageLinks[i].iconStyle;
+    const color           =  imageLinks[i].iconStyle.color ===  'limegreen' ? 'white' : 'limegreen';
+
+    imageLinks[i].iconStyle =  { ...oldStyle, color };
+    imageLinks[i].selected  =  !imageLinks[i].selected;
     this.setState({ imageLinks })
   }
-  handleMousePassage = (i, iStyle, newColor, ignoreColor) => {
+
+
+  handleMousePassage = (i, newColor, ignoreColor) => {
     const { imageLinks } =  this.state;
     const elementStyle   =  imageLinks[i].iconStyle;
     const color          =  newColor;
 
     if (elementStyle.color !== ignoreColor) { return }
 
-    imageLinks[i].iconStyle = {...iStyle, color}
+    imageLinks[i].iconStyle = { ...elementStyle, color }
     this.setState({ imageLinks })
   }
 
+
+  handleSubmit = () => {
+    const selectedImages = this.state.imageLinks.filter( (link) => link.selected )
+    print(selectedImages)
+
+  }
+
   render = () => {
-    const { imageLinks } = this.state;
-    const { imageStyle, addNewBoxStyle } = this.state;
+    const { imageLinks, imageStyle, addNewBoxStyle } = this.state;
     return (
-      <>
-        <Col
-          xs={12} sm={4} md={3}
-          style     =  {addNewBoxStyle}
-          className =  "d-flex align-items-center justify-content-center flex-column flex-wrap">
-          <i className="glyphicon glyphicon-plus-sign" />
-          <span style={{'paddingTop': '5px'}}>add cover page</span>
-          <Image />
+      <div>
+        <Row>
+          <Col
+            xs={12}  sm={4}  md={3}
+            style     =  {addNewBoxStyle}
+            className =  "d-flex align-items-center justify-content-center flex-column flex-wrap" >
+            <FontAwesomeIcon icon={faPlusCircle} />
+            <span style={{'paddingTop': '5px'}}>add cover page</span>
+            <Image />
+          </Col>
 
-        </Col>
+          {
+            imageLinks.map( (image, i) => (
+              <ImageElement
+                i                  =  {i}
+                key                =  {i}
+                image              =  {image}
+                imageStyle         =  {imageStyle}
+                iconStyle          =  {imageLinks[i].iconStyle}
+                handleClick        =  {this.handleClick}
+                handleMousePassage =  {this.handleMousePassage}
+              />
+            ) )
+          }
+        </Row>
 
-        {
-          imageLinks.map( (image, i) => (
-            <Col
-              xs={4} sm={4} md={3}
-              key={image.url}
-              >
-              <i style={ { ...imageLinks[i]['iconStyle'] } } className="glyphicon glyphicon-ok-sign" />
-              <Image
-                src          =  {image.url}
-                style        =  {imageStyle}
-                onClick      =  { () => this.handleClick(i, imageLinks[i]['iconStyle']) }
-                onMouseEnter =  { () => this.handleMousePassage(i, imageLinks[i]['iconStyle'], 'white', 'gray') }
-                onMouseLeave =  { () => this.handleMousePassage(i, imageLinks[i]['iconStyle'], 'gray', 'white') }
-                thumbnail
-                />
-            </Col>
-          ) )
-        }
-      </>
+        <Button onClick={this.handleSubmit}>Submit</Button>
+      </div>
     );
   }
+}
+
+const ImageElement = ({
+  i,
+  image,
+  imageStyle,
+  iconStyle,
+  handleClick,
+  handleMousePassage,
+}) => {
+
+  return (
+    <Col xs={4} sm={4} md={3} key={image.url} >
+      <FontAwesomeIcon style={ iconStyle } icon={ faCheckCircle } />
+      <Image
+        src          =  { image.url }
+        style        =  { imageStyle }
+        onClick      =  { () => handleClick(i) }
+        onMouseEnter =  { () => handleMousePassage(i, 'white', 'gray') }
+        onMouseLeave =  { () => handleMousePassage(i, 'gray', 'white') }
+        thumbnail
+        />
+    </Col>
+  )
 }
 
 export default Radium(ImageContainer);

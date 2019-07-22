@@ -3,7 +3,7 @@ import Container  from 'react-bootstrap/Container'
 import            Row from 'react-bootstrap/Row'
 
 import ImageContainer from './ImageContainer'
-import './css/bootstrap.min.css'
+
 const print = console.log
 
 const App = () => {
