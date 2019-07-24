@@ -1,70 +1,62 @@
 import os
 from flask import Blueprint, request, make_response, send_file
-from comic_downloader.run import run, get_comic_info, get_images, download_comic
+from comic_downloader.run import run
 import requests
 
+from ui_api.controller import get_comic_info
+
+
 routes = Blueprint('routes', __name__)
-# get list of website urls
-# loop through each and run comic-package up to grabbing the image links
-# image links are stored in array and sent to ui
-  # render links at the ui level
-  # allow user to move/add/remove images in the array
-  # send modifed array back to server + filetype of desired output comic file
-# download the images
-# create pdf/cbz
-# ask if user wants to save file elsewhere
 
 
-# endpoints
-  # home - render ui
-  # download_files - [{comic_name:'', issue_number:'', images:[]}]
-
-@routes.route("/")
-@routes.route("/home")
+@routes.route("/api/")
+@routes.route("/api/home", methods=['GET', 'POST'])
 def home():
   return make_response({'hello': 'hi'})
 
 
-@routes.route('/get_comic_info', methods=['POST'])
-def get_comic_info():
-  payload    =  request.get_json()
-  comic_link =  payload['comic_link']
-  filetype   =  payload['filetype']
+@routes.route('/api/get_info', methods=['POST'])
+def get_info():
+  payload = request.get_json()
+  if payload == None:
+    print('get_info error, payload: ', payload)
+    return make_response({'error': 'empty payload', 'src': '/gen_info'}, 404)
 
-  comic_info  =  get_comic_info(comic_link, filetype)
-  image_links =  get_images(comic_link, comic_info['domain_settings'])
-
+  print('payload: ', payload)
+  # response = get_comic_info(payload)
   response = {
-    "url"          :  comic_link,
-    "issue_number" :  comic_info['issue_number'],
-    "comic_name"   :  comic_info['comic_name'],
-    "image_links"  :  image_links,
+    "issue_number" :  '01',
+    "comic_name"   :  'test-comic',
+    "filename"     :  'test-comic-01.cbz',
+    "image_links"  :  [
+      'https://c2.staticflickr.com/9/8817/28973449265_07e3aa5d2e_b.jpg',
+      'https://c2.staticflickr.com/9/8356/28897120681_3b2c0f43e0_b.jpg',
+      'https://c4.staticflickr.com/9/8887/28897124891_98c4fdd82b_b.jpg',
+      # 'https://2.bp.blogspot.com/-RxqtUUMHMbI/WqCKWYsAgXI/AAAAAAAAEUQ/QTn0DvwHM0Y70QIRi_Cj4lfEINxwP52EgCHMYCw/s1600/RCO001.jpg',
+      # 'https://2.bp.blogspot.com/-uUVBZgQek2w/WqCKWkKzXXI/AAAAAAAAEUU/e7c_gvh_iOYqEK9Mo-VuL_96PYa5spOCgCHMYCw/s1600/RCO002_w.jpg',
+      # 'https://2.bp.blogspot.com/-9o-T9zXEWKA/WqCKXIiIw1I/AAAAAAAAEUY/ccEHCHXHhkc19ESJpT7pssGc1gjXY-9JwCHMYCw/s1600/RCO003.jpg',
+    ]
   }
 
   return make_response(response)
 
-@routes.route('/download', methods=['POST'])
-def download():
-  payload      =  request.get_json()
-  comic_name   =  payload['comic_name']
-  issue_number =  payload['issue_number']
-  image_links  =  payload['image_links']
 
-  session  =  requests.Session()
-  download_location =  download_comic(comic_name, issue_number, image_links, session, filetype='cbz', filename='foo.cbz')
-  # download_location = os.path.join('..', download_location)
-  print('download_location:', download_location)
-  # return make_response(download_location)
+@routes.route('/api/download', methods=['POST'])
+def download():
+  payload =  request.get_json()
+  if payload == None:
+    print('download error, payload: ', payload)
+    return make_response({'error': 'empty payload', 'src': '/download'}, 404)
+
+  download_location =  download_comic(json)
   return send_file(f'../{download_location}')
 
 
+# @routes.route('/dl-direct', methods=['POST'])
+# def download_direct():
+#   payload    =  request.get_json()
+#   comic_link =  payload['comic_link']
+#   filetype   =  payload['filetype']
 
-
-@routes.route('/dl-direct', methods=['POST'])
-def download_direct():
-  payload    =  request.get_json()
-  comic_link =  payload['comic_link']
-  filetype   =  payload['filetype']
-
-  run('foobar', comic_link, filetype)
-  return
+#   run('foobar', comic_link, filetype)
+#   return
