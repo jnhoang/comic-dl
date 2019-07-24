@@ -1,46 +1,75 @@
-import React      from 'react';
+import React, {Component}     from 'react';
 import Container  from 'react-bootstrap/Container'
 
+import Button from 'react-bootstrap/Button'
 import ImageContainer from './ImageContainer'
+
+import {baseUrl} from './services'
 
 const print = console.log
 
-const App = () => {
-  const imageLinks = [
-    'https://c2.staticflickr.com/9/8817/28973449265_07e3aa5d2e_b.jpg',
-    'https://c2.staticflickr.com/9/8356/28897120681_3b2c0f43e0_b.jpg',
-    'https://c4.staticflickr.com/9/8887/28897124891_98c4fdd82b_b.jpg',
-    // 'https://2.bp.blogspot.com/-RxqtUUMHMbI/WqCKWYsAgXI/AAAAAAAAEUQ/QTn0DvwHM0Y70QIRi_Cj4lfEINxwP52EgCHMYCw/s1600/RCO001.jpg',
-    // 'https://2.bp.blogspot.com/-uUVBZgQek2w/WqCKWkKzXXI/AAAAAAAAEUU/e7c_gvh_iOYqEK9Mo-VuL_96PYa5spOCgCHMYCw/s1600/RCO002_w.jpg',
-    // 'https://2.bp.blogspot.com/-9o-T9zXEWKA/WqCKXIiIw1I/AAAAAAAAEUY/ccEHCHXHhkc19ESJpT7pssGc1gjXY-9JwCHMYCw/s1600/RCO003.jpg',
-  ]
+class App extends Component {
+  state = {
+    filename    :  '',
+    imageLinks  :  [],
+    comicName   :  '',
+    filetype    :  'cbz',
+    issueNumber :  '',
+  }
 
-  return (
-    <Container>
-      <header className="App-header">
-        This is the header
-      </header>
 
-      {/*
-        INPUT PROCESSOR (ENTER COMIC LINK HERE)
-        MAKE REQUEST TO /get_comic_info
+  handleSearch = async() => {
+    const payload = {
+      comic_link :  `${baseUrl}/teehee/`,
+      filetype   :  'cbz',
+    };
+    const response = await fetch(`${baseUrl}/get_info`, {
+      method  :  'POST',
+      body    :  JSON.stringify(payload),
+      headers :  { 'Content-Type': 'application/json' },
+    });
 
-          return {
-            url,
-            issue_number,
-            comic_name,
-            image_links
-          }
-        ImageContainer
-          handles image editing
-          rerender?
-          will send download reques
-      */}
+    const data = await response.json()
 
-      <ImageContainer imageLinks = {imageLinks} />
+    this.setState({
+      comicName       :  data.comic_name,
+      filename        :  data.filename,
+      filetype        :  data.filetype,
+      imageLinks      :  data.image_links,
+      issueNumber     :  data.issue_number,
+      url             :  data.url,
+    })
+  }
 
-    </Container>
-  );
+
+  render = () => {
+    const {comicName, filename, filetype, imageLinks, issueNumber, url} = this.state;
+
+    return (
+      <Container>
+        <div>
+          <h1>Acceptable Sites</h1>
+          <ul>
+            <li>www.comicextra.com</li>
+            <li>www.mangahere.cc</li>
+            <li>www.mangareader.net</li>
+            <li>readcomiconline.to</li>
+          </ul>
+        </div>
+
+
+        <Button onClick={this.handleSearch}>Search</Button>
+
+        { imageLinks.length > 0 && (
+            <ImageContainer
+              imageLinks = {imageLinks}
+              filename = {filename}
+              />
+          )
+        }
+      </Container>
+    )
+  }
 }
 
 

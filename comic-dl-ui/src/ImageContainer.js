@@ -22,7 +22,7 @@ const ICON_STYLE = {
 
 class ImageContainer extends Component {
   state = {
-    'imageLinks'     :  [],
+    'imageLinks' :  [],
     'addNewBoxStyle' :  {
       'backgroundColor' :  'white',
       'borderRadius'    :  '4px',
@@ -77,36 +77,37 @@ class ImageContainer extends Component {
 
 
   handleSubmit = async() => {
-    const selectedImages = this.state.imageLinks.filter( (link) => link.selected )
-    .map( links => links.url)
-    print(selectedImages)
+    const {filename} = this.props;
+    const selectedImages = this.state.imageLinks
+      .filter( (link) => link.selected )
+      .map(    (link) => link.url );
+
     const payload = {
-      "comic_link": "https://readcomiconline.to/Comic/The-Walking-Dead/Issue-177",
-      "comic_name": "test",
-      "issue_number": "1",
-      "filetype": "cbz",
-      "image_links": ["https://c2.staticflickr.com/9/8817/28973449265_07e3aa5d2e_b.jpg", "https://c2.staticflickr.com/9/8356/28897120681_3b2c0f43e0_b.jpg", "https://c4.staticflickr.com/9/8887/28897124891_98c4fdd82b_b.jpg"]
+      "comic_name"   :  "test",
+      'filename'     :  '',
+      "issue_number" :  "1",
+      "image_links"  :  ["https://c2.staticflickr.com/9/8817/28973449265_07e3aa5d2e_b.jpg", "https://c2.staticflickr.com/9/8356/28897120681_3b2c0f43e0_b.jpg", "https://c4.staticflickr.com/9/8887/28897124891_98c4fdd82b_b.jpg"]
     }
+
     try {
-      const response = await fetch('http://localhost:56029/download', {
+      const response = await fetch('http://localhost:56029/api/download', {
         method :  'POST',
         body   :  JSON.stringify(payload),
         headers: { 'Content-Type': 'application/json' }
       })
       const data = await response.blob()
       this.setState({download: URL.createObjectURL(new Blob([data]))})
-      print('data: ', data)
-      // const url = window.URL.createObjectURL(new Blob([data]));
-      // const link = document.createElement('a');
-      // link.href = url;
-      // link.setAttribute('download', `sample.cbz`);
+
+      const link =  document.createElement('a');
+      link.href  =  URL.createObjectURL(new Blob([data]));
+      link.setAttribute('download', filename); // TODO
 
       // 3. Append to html page
-      // document.body.appendChild(link);
+      document.body.appendChild(link);
       // 4. Force download
-      // link.click();
+      link.click();
       // 5. Clean up and remove the link
-      // link.parentNode.removeChild(link);
+      link.parentNode.removeChild(link);
 
     }
     catch(e) {
@@ -116,11 +117,11 @@ class ImageContainer extends Component {
   }
 
   render = () => {
-    const { imageLinks, imageStyle, addNewBoxStyle, download } = this.state;
+    const { imageLinks, imageStyle, addNewBoxStyle } = this.state;
     return (
       <div>
         <Row>
-          { download && <a href={download} download={'test.cbz'} target="_blank">Download</a>}
+
         <Col
             xs={12}  sm={4}  md={3}
             style     =  {addNewBoxStyle}
@@ -145,7 +146,7 @@ class ImageContainer extends Component {
           }
         </Row>
 
-        <Button onClick={this.handleSubmit}>Submit</Button>
+        <Button onClick={this.handleSubmit}>Download</Button>
       </div>
     );
   }
