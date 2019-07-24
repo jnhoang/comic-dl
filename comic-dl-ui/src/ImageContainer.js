@@ -1,15 +1,16 @@
 import React, { Component } from 'react'
 import Radium   from 'radium'
-import Image    from 'react-bootstrap/Image'
+
 import Col      from 'react-bootstrap/Col'
 import Row      from 'react-bootstrap/Row'
 import Button   from 'react-bootstrap/Button'
 
-import {
-  faCheckCircle,
-  faPlusCircle
-} from '@fortawesome/free-solid-svg-icons'
+import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import ImageElement     from './components/ImageElements'
+import { downloadFile } from './services'
+
 const print = console.log;
 
 const ICON_STYLE = {
@@ -19,35 +20,27 @@ const ICON_STYLE = {
   'height'   :  '1.75em',
   'width'    :  '1.75em',
 };
+const ADD_NEW_BOX_STYLE =  {
+  'backgroundColor' :  'white',
+  'borderRadius'    :  '4px',
+  'outline'         :  '1px solid #dee2e6',
+  'height'          :  '123px',
+  'width'           :  '213px'
+};
+
 
 class ImageContainer extends Component {
-  state = {
-    'imageLinks' :  [],
-    'addNewBoxStyle' :  {
-      'backgroundColor' :  'white',
-      'borderRadius'    :  '4px',
-      'outline'         :  '1px solid #dee2e6',
-      'height'          :  '123px',
-      'width'           :  '213px'
-    },
-    'imageStyle': {
-      ':hover': {
-        'cursor'     :  'pointer',
-        'transition' :  'none 0s ease 0s',
-        'transform'  :  'translate3d(0px, 0px, 0px)',
-      },
-    }
-  }
+  state = { 'imageLinks' :  [] };
 
   componentDidMount = () => {
     const { imageLinks }     =  this.props;
     const imagesToMapToState =  imageLinks.map( (link) => (
-        {
-          'url'       :  link,
-          'iconStyle' :  { ...ICON_STYLE },
-          'selected'  :  false,
-        }
-      ));
+      {
+        'url'       :  link,
+        'iconStyle' :  ICON_STYLE,
+        'selected'  :  false,
+      }
+    ));
 
     this.setState({ imageLinks: imagesToMapToState });
   }
@@ -75,40 +68,34 @@ class ImageContainer extends Component {
     this.setState({ imageLinks })
   }
 
+  handleRemove = () => {
+    const imagesToRemove = this.state.imageLinks
+      .filter( (link) => !link.selected )
+      .map(    (link) => link );
+
+    this.setState({imageLinks: imagesToRemove})
+  }
 
   handleSubmit = async() => {
-    const {filename} = this.props;
-    const selectedImages = this.state.imageLinks
-      .filter( (link) => link.selected )
-      .map(    (link) => link.url );
+    const { comicName, filename, filetype, issueNumber } = this.props;
+    const { imageLinks } = this.state;
 
     const payload = {
-      "comic_name"   :  "test",
-      'filename'     :  '',
-      "issue_number" :  "1",
-      "image_links"  :  ["https://c2.staticflickr.com/9/8817/28973449265_07e3aa5d2e_b.jpg", "https://c2.staticflickr.com/9/8356/28897120681_3b2c0f43e0_b.jpg", "https://c4.staticflickr.com/9/8887/28897124891_98c4fdd82b_b.jpg"]
+      "comic_name"   :  comicName,
+      'filename'     :  filename,
+      'filetype'     :  filetype,
+      "issue_number" :  issueNumber,
+      "image_links"  :  imageLinks.map( links => links.url),
     }
 
     try {
       const response = await fetch('http://localhost:56029/api/download', {
-        method :  'POST',
-        body   :  JSON.stringify(payload),
-        headers: { 'Content-Type': 'application/json' }
+        method  :  'POST',
+        body    :  JSON.stringify(payload),
+        headers :  { 'Content-Type': 'application/json' }
       })
       const data = await response.blob()
-      this.setState({download: URL.createObjectURL(new Blob([data]))})
-
-      const link =  document.createElement('a');
-      link.href  =  URL.createObjectURL(new Blob([data]));
-      link.setAttribute('download', filename); // TODO
-
-      // 3. Append to html page
-      document.body.appendChild(link);
-      // 4. Force download
-      link.click();
-      // 5. Clean up and remove the link
-      link.parentNode.removeChild(link);
-
+      downloadFile(data, filename);
     }
     catch(e) {
       print('error: ', e)
@@ -117,18 +104,17 @@ class ImageContainer extends Component {
   }
 
   render = () => {
-    const { imageLinks, imageStyle, addNewBoxStyle } = this.state;
+    const { imageLinks } = this.state;
     return (
       <div>
         <Row>
 
-        <Col
+          <Col
             xs={12}  sm={4}  md={3}
-            style     =  {addNewBoxStyle}
+            style     =  {ADD_NEW_BOX_STYLE}
             className =  "d-flex align-items-center justify-content-center flex-column flex-wrap" >
             <FontAwesomeIcon icon={faPlusCircle} />
             <span style={{'paddingTop': '5px'}}>add cover page</span>
-            <Image />
           </Col>
 
           {
@@ -137,43 +123,26 @@ class ImageContainer extends Component {
                 i                  =  {i}
                 key                =  {i}
                 image              =  {image}
-                imageStyle         =  {imageStyle}
                 iconStyle          =  {imageLinks[i].iconStyle}
                 handleClick        =  {this.handleClick}
                 handleMousePassage =  {this.handleMousePassage}
               />
-            ) )
+            ))
           }
         </Row>
 
-        <Button onClick={this.handleSubmit}>Download</Button>
+        <Row>
+          <Col xs={6} sm={3}>
+            <Button className='btn-success' onClick={this.handleSubmit}>Download</Button>
+          </Col>
+          <Col xs={6} sm={3}>
+            <Button className='btn-danger'  onClick={this.handleRemove}>Remove Panels</Button>
+          </Col>
+        </Row>
       </div>
     );
   }
 }
 
-const ImageElement = ({
-  i,
-  image,
-  imageStyle,
-  iconStyle,
-  handleClick,
-  handleMousePassage,
-}) => {
-
-  return (
-    <Col xs={4} sm={4} md={3} key={image.url} >
-      <FontAwesomeIcon style={ iconStyle } icon={ faCheckCircle } />
-      <Image
-        src          =  { image.url }
-        style        =  { imageStyle }
-        onClick      =  { () => handleClick(i) }
-        onMouseEnter =  { () => handleMousePassage(i, 'white', 'gray') }
-        onMouseLeave =  { () => handleMousePassage(i, 'gray', 'white') }
-        thumbnail
-        />
-    </Col>
-  )
-}
 
 export default Radium(ImageContainer);

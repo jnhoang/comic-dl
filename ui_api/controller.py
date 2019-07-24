@@ -18,11 +18,11 @@ def get_comic_info(json):
   filetype   =  json['filetype']
 
   # figure out which site settings to use
-  domain          =  utils.get_url_domain(url)
+  domain          =  utils.get_url_domain(comic_link)
   domain_settings =  site_info.get_domain_settings(domain)    # TBD - try/catch site
 
   # comic details
-  comic_name, issue_number, filename = site_info.get_comic_details(url, filetype, domain_settings)
+  comic_name, issue_number, filename = site_info.get_comic_details(comic_link, filetype, domain_settings)
   image_links = get_panels(comic_link, domain_settings)
   return {
     'comic_name'   :  comic_name,
@@ -43,14 +43,14 @@ def get_panels(url, domain_settings):
 
 
 def download_comic(json):
-  comic_name   =  json.comic_name
-  filename     =  json.filename
-  image_links  =  json.image_links
-  issue_number =  json.issue_number
+  comic_name   =  json['comic_name']
+  filename     =  json['filename']
+  image_links  =  json['image_links']
+  issue_number =  json['issue_number']
+  filetype     =  json['filetype']
 
   # download images
-  session =  requests.Session()
-  scraper.download_images(comic_name, issue_number, image_links, session)
+  scraper.download_images(comic_name, issue_number, image_links)
 
   # regroup images & sort to avoid a bad pagination
   unsorted_images =  [ image for image in glob.glob(f'{file_manager.full_temp_path}/*.jpg') ]

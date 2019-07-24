@@ -22,7 +22,8 @@ class WebScraper():
     except requests.exceptions.HTTPError as e:
       raise e
 
-  def download_images(self, comic_name, issue_number, image_links, session):
+  def download_images(self, comic_name, issue_number, image_links):
+    session =  requests.Session()
     file_manager.create_temp_dir()
 
     for i, link in enumerate(image_links):

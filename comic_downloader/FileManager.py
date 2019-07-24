@@ -27,6 +27,7 @@ class FileManager():
       os.mkdir(series_dir)
     return series_dir
 
+
   def get_download_location(self, series_dir, filename):
     return os.path.join(series_dir, filename)
 

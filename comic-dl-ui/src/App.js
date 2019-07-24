@@ -3,7 +3,7 @@ import Container  from 'react-bootstrap/Container'
 
 import Button from 'react-bootstrap/Button'
 import ImageContainer from './ImageContainer'
-
+import AccetableSites from './components/AcceptableSites'
 import {baseUrl} from './services'
 
 const print = console.log
@@ -15,14 +15,16 @@ class App extends Component {
     comicName   :  '',
     filetype    :  'cbz',
     issueNumber :  '',
-  }
+  };
 
 
   handleSearch = async() => {
+    const comicLink = '';
     const payload = {
-      comic_link :  `${baseUrl}/teehee/`,
-      filetype   :  'cbz',
+      comic_link :  'https://readcomiconline.to/Comic/The-Walking-Dead/Issue-179',   // TODO - read from input as comicLink
+      filetype   :  'cbz',                  // TODO - dynamic this
     };
+
     const response = await fetch(`${baseUrl}/get_info`, {
       method  :  'POST',
       body    :  JSON.stringify(payload),
@@ -32,41 +34,33 @@ class App extends Component {
     const data = await response.json()
 
     this.setState({
-      comicName       :  data.comic_name,
-      filename        :  data.filename,
-      filetype        :  data.filetype,
-      imageLinks      :  data.image_links,
-      issueNumber     :  data.issue_number,
-      url             :  data.url,
+      url         :  comicLink,
+      comicName   :  data.comic_name,
+      filename    :  data.filename,
+      filetype    :  'cbz',
+      imageLinks  :  data.image_links,
+      issueNumber :  data.issue_number,
     })
   }
 
 
   render = () => {
-    const {comicName, filename, filetype, imageLinks, issueNumber, url} = this.state;
+    const {comicName, filename, filetype, imageLinks, issueNumber} = this.state;
 
     return (
       <Container>
-        <div>
-          <h1>Acceptable Sites</h1>
-          <ul>
-            <li>www.comicextra.com</li>
-            <li>www.mangahere.cc</li>
-            <li>www.mangareader.net</li>
-            <li>readcomiconline.to</li>
-          </ul>
-        </div>
-
-
+        { imageLinks.length === 0 && ( <AccetableSites /> ) }
         <Button onClick={this.handleSearch}>Search</Button>
 
+
         { imageLinks.length > 0 && (
-            <ImageContainer
-              imageLinks = {imageLinks}
-              filename = {filename}
-              />
-          )
-        }
+          <ImageContainer
+            comicName   =  {comicName}
+            imageLinks  =  {imageLinks}
+            filename    =  {filename}
+            filetype    =  {filetype}
+            issueNumber =  {issueNumber} />
+        )}
       </Container>
     )
   }
