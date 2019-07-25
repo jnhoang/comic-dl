@@ -3,11 +3,11 @@ import Radium   from 'radium'
 
 import Col      from 'react-bootstrap/Col'
 import Row      from 'react-bootstrap/Row'
-import Button   from 'react-bootstrap/Button'
 
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlusCircle }     from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon }  from "@fortawesome/react-fontawesome";
 
+import ComicNavbar      from './components/ComicNavbar'
 import ImageElement     from './components/ImageElements'
 import { downloadFile } from './services'
 
@@ -24,8 +24,8 @@ const ADD_NEW_BOX_STYLE =  {
   'backgroundColor' :  'white',
   'borderRadius'    :  '4px',
   'outline'         :  '1px solid #dee2e6',
-  'height'          :  '123px',
-  'width'           :  '213px'
+  'height'          :  '230px',
+  'width'           :  '150px'
 };
 
 
@@ -33,7 +33,7 @@ class ImageContainer extends Component {
   state = { 'imageLinks' :  [] };
 
   componentDidMount = () => {
-    const { imageLinks }     =  this.props;
+    const { imageLinks } =  this.props;
     const imagesToMapToState =  imageLinks.map( (link) => (
       {
         'url'       :  link,
@@ -46,10 +46,11 @@ class ImageContainer extends Component {
   }
 
 
+
   handleClick = (i) => {
     const { imageLinks }  =  this.state;
     const oldStyle        =  imageLinks[i].iconStyle;
-    const color           =  imageLinks[i].iconStyle.color ===  'limegreen' ? 'white' : 'limegreen';
+    const color           =  imageLinks[i].iconStyle.color ===  'red' ? 'white' : 'red';
 
     imageLinks[i].iconStyle =  { ...oldStyle, color };
     imageLinks[i].selected  =  !imageLinks[i].selected;
@@ -107,8 +108,12 @@ class ImageContainer extends Component {
     const { imageLinks } = this.state;
     return (
       <div>
-        <Row>
 
+        <ComicNavbar
+          handleSubmit={this.handleSubmit}
+          handleRemove={this.handleRemove} />
+
+        <Row>
           <Col
             xs={12}  sm={4}  md={3}
             style     =  {ADD_NEW_BOX_STYLE}
@@ -131,14 +136,6 @@ class ImageContainer extends Component {
           }
         </Row>
 
-        <Row>
-          <Col xs={6} sm={3}>
-            <Button className='btn-success' onClick={this.handleSubmit}>Download</Button>
-          </Col>
-          <Col xs={6} sm={3}>
-            <Button className='btn-danger'  onClick={this.handleRemove}>Remove Panels</Button>
-          </Col>
-        </Row>
       </div>
     );
   }

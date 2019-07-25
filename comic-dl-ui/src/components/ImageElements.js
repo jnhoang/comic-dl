@@ -1,7 +1,7 @@
 import React  from 'react';
 import Image  from 'react-bootstrap/Image'
 import Col    from 'react-bootstrap/Col'
-import { faCheckCircle }    from '@fortawesome/free-solid-svg-icons'
+import { faTimesCircle }     from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon }  from "@fortawesome/react-fontawesome";
 
 const ImageElement = ({
@@ -28,7 +28,7 @@ const ImageElement = ({
         onMouseEnter =  { () => handleMousePassage(i, 'white', 'gray') }
         onMouseLeave =  { () => handleMousePassage(i, 'gray', 'white') }
         />
-      <FontAwesomeIcon style={ iconStyle } icon={ faCheckCircle } />
+      <FontAwesomeIcon style={ iconStyle } icon={ faTimesCircle } />
       <Image src={ image.url } thumbnail />
     </Col>
   )

@@ -1,15 +1,19 @@
-import React, {Component}     from 'react';
-import Container  from 'react-bootstrap/Container'
+import React, {Component} from 'react';
+import Container      from 'react-bootstrap/Container'
+import InputGroup     from 'react-bootstrap/InputGroup'
+import DropdownButton from 'react-bootstrap/DropdownButton'
+import Dropdown       from 'react-bootstrap/Dropdown'
+import FormControl    from 'react-bootstrap/FormControl'
 
-import Button from 'react-bootstrap/Button'
 import ImageContainer from './ImageContainer'
 import AccetableSites from './components/AcceptableSites'
-import {baseUrl} from './services'
+import {baseUrl}      from './services'
 
 const print = console.log
 
 class App extends Component {
   state = {
+    comicLink   :  '',
     filename    :  '',
     imageLinks  :  [],
     comicName   :  '',
@@ -18,11 +22,13 @@ class App extends Component {
   };
 
 
-  handleSearch = async() => {
+  handleSearch = async(eventKey) => {
     const comicLink = '';
+
     const payload = {
-      comic_link :  'https://readcomiconline.to/Comic/The-Walking-Dead/Issue-179',   // TODO - read from input as comicLink
-      filetype   :  'cbz',                  // TODO - dynamic this
+      // comic_link :  'https://readcomiconline.to/Comic/The-Walking-Dead/Issue-179',   // TODO - read from input as comicLink
+      comic_link :  this.state.comicLink,   // TODO - read from input as comicLink
+      filetype   :  eventKey,
     };
 
     const response = await fetch(`${baseUrl}/get_info`, {
@@ -32,7 +38,6 @@ class App extends Component {
     });
 
     const data = await response.json()
-
     this.setState({
       url         :  comicLink,
       comicName   :  data.comic_name,
@@ -43,14 +48,42 @@ class App extends Component {
     })
   }
 
+  handleChange = (event) => {
+    this.setState({comicLink: event.target.value})
+  }
+
+  handleSubmit = (eventKey) => {
+    print('eventKey: ', eventKey)
+  }
 
   render = () => {
     const {comicName, filename, filetype, imageLinks, issueNumber} = this.state;
 
     return (
+
       <Container>
-        { imageLinks.length === 0 && ( <AccetableSites /> ) }
-        <Button onClick={this.handleSearch}>Search</Button>
+        { imageLinks.length === 0 && (
+          <div>
+            <AccetableSites />
+
+            <InputGroup className="mb-3">
+              <FormControl
+                onChange    =  {this.handleChange}
+                placeholder =  "Paste URL here from acceptable site" />
+
+                <DropdownButton
+                  as      =  {InputGroup.Prepend}
+                  variant =  "outline-secondary"
+                  title   =  "filetype"
+                  id      =  "input-group-1" >
+                  <Dropdown.Item eventKey="CBZ" onSelect={this.handleSubmit} >CBZ</Dropdown.Item>
+                  <Dropdown.Item eventKey="PDF"  onSelect={this.handleSubmit} >PDF</Dropdown.Item>
+                </DropdownButton>
+
+            </InputGroup>
+
+          </div>
+        )}
 
 
         { imageLinks.length > 0 && (

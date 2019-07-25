@@ -9,6 +9,8 @@ const AcceptableSites = () => (
       <li>www.mangareader.net</li>
       <li>readcomiconline.to</li>
     </ul>
+
+    <p>ADD SOME INFORMATION ON HOW TO USE THIS SITE</p>
   </div>
 );
 
