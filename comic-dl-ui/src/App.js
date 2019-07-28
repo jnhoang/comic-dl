@@ -17,17 +17,25 @@ class App extends Component {
     filename    :  '',
     imageLinks  :  [],
     comicName   :  '',
-    filetype    :  'cbz',
+    filetype    :  '',
     issueNumber :  '',
   };
 
+  initialize = () => {
+    this.setState({
+      comicLink   :  '',
+      filename    :  '',
+      imageLinks  :  [],
+      comicName   :  '',
+      filetype    :  '',
+      issueNumber :  '',
+    })
+  }
 
   handleSearch = async(eventKey) => {
-    const comicLink = '';
-
-    const payload = {
-      // comic_link :  'https://readcomiconline.to/Comic/The-Walking-Dead/Issue-179',   // TODO - read from input as comicLink
-      comic_link :  this.state.comicLink,   // TODO - read from input as comicLink
+    const comicLink =  this.state.comicLink;
+    const payload   =  {
+      comic_link :  comicLink,
       filetype   :  eventKey,
     };
 
@@ -42,19 +50,14 @@ class App extends Component {
       url         :  comicLink,
       comicName   :  data.comic_name,
       filename    :  data.filename,
-      filetype    :  'cbz',
+      filetype    :  eventKey,
       imageLinks  :  data.image_links,
       issueNumber :  data.issue_number,
     })
   }
 
-  handleChange = (event) => {
-    this.setState({comicLink: event.target.value})
-  }
+  handleChange = (event) => (this.setState({comicLink: event.target.value}))
 
-  handleSubmit = (eventKey) => {
-    print('eventKey: ', eventKey)
-  }
 
   render = () => {
     const {comicName, filename, filetype, imageLinks, issueNumber} = this.state;
@@ -76,8 +79,8 @@ class App extends Component {
                   variant =  "outline-secondary"
                   title   =  "filetype"
                   id      =  "input-group-1" >
-                  <Dropdown.Item eventKey="CBZ" onSelect={this.handleSubmit} >CBZ</Dropdown.Item>
-                  <Dropdown.Item eventKey="PDF"  onSelect={this.handleSubmit} >PDF</Dropdown.Item>
+                  <Dropdown.Item eventKey="cbz" onSelect={this.handleSearch} >CBZ</Dropdown.Item>
+                  <Dropdown.Item eventKey="pdf"  onSelect={this.handleSearch} >PDF</Dropdown.Item>
                 </DropdownButton>
 
             </InputGroup>

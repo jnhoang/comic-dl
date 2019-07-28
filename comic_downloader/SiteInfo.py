@@ -17,7 +17,7 @@ class SiteInfo():
         'name_position'  :  3,
         'issue_position' :  4,
       },
-      'mangahere' : {
+      'www.mangahere.cc' : {
         'domain'         :  'www.mangahere.cc',
         'base_url'       :  'http://www.mangahere.cc/',
         'image_regex'    :  r'<img[^>]+src="([^">]+)"',
@@ -25,7 +25,7 @@ class SiteInfo():
         'name_position'  :  4,
         'issue_position' :  5,
       },
-      'mangareader' : {
+      'www.mangareader.net' : {
         'domain'         :  'www.mangareader.net',
         'base_url'       :  'https://www.mangareader.net',
         'image_regex'    :  '<img[^>]+src="([^">]+)"',
@@ -57,7 +57,7 @@ class SiteInfo():
       regex        =  self.site_settings['read_comic_online']['issue_regex']
       issue_number =  re.findall(regex, split_url[5])[0]
     else:
-      issue_number = split_url[self.site_settings[domain][issue_position]]
+      issue_number = split_url[self.site_settings[domain]['issue_position']]
 
     return issue_number
 
@@ -65,16 +65,15 @@ class SiteInfo():
   def get_image_links(self, response, domain_settings, session):
     domain = domain_settings['domain']
 
-    if domain == self.site_settings['mangahere']['domain']:
-      image_links =  mangahere_images_links(response)
-    elif domain == self.site_settings['mangareader']['domain']:
-      image_links = mangareader_images_links(response)
+    if domain == self.site_settings['www.mangahere.cc']['domain']:
+      image_links =  self.mangahere_images_links(response)
+    elif domain == self.site_settings['www.mangareader.net']['domain']:
+      image_links = self.mangareader_images_links(response)
     else:
       html    =  BeautifulSoup(response.content, 'html.parser')
 
       image_html_links =  re.findall(domain_settings['image_regex'], str(html))
       image_links      =  [ link for link in image_html_links if utils.is_url_valid(link)]
-
     return image_links
 
 
@@ -90,9 +89,8 @@ class SiteInfo():
     # retrieve the <options> in page
     options =  soup.findAll('option')
     links   =  [ f'http:{option.get("value")}' for option in options ]
-
     # grab all img links
-    regex        =  self.site_settings['mangahere']['image_regex']
+    regex        =  self.site_settings['www.mangahere.cc']['image_regex']
     images_links =  []
 
     for link in links:
@@ -106,7 +104,7 @@ class SiteInfo():
 
 
   def mangareader_images_links(self, response):
-    setting =  self.site_settings['mangareader']
+    setting =  self.site_settings['www.mangareader.net']
     session =  requests.Session()
     soup    =  BeautifulSoup(response.content, 'html.parser')
 

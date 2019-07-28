@@ -61,9 +61,9 @@ def download_comic(json):
   download_location =  file_manager.get_download_location(series_dir, filename)
 
   # create pdf/cbz
-  if filetype == 'pdf':
+  if filetype.lower() == 'pdf':
     file_manager.create_pdf(download_location, images)
-  elif filetype == 'cbz':
+  elif filetype.lower() == 'cbz':
     file_manager.create_cbz(download_location, images)
 
   return download_location

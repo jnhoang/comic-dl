@@ -10,7 +10,11 @@ class WebScraper():
 
   def scrape_comic(self, url, antibot):
     # Get page raw content
-    response = self.scraper.get(url) if antibot else requests.get(url)
+    try:
+      response = self.scraper.get(url) if antibot else requests.get(url)
+    except:
+      print('\n\n========first attempt failed, attempting retry')
+      response = self.scraper.get(url) if antibot else requests.get(url)
     return self.handle_response(response)
 
 

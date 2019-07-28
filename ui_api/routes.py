@@ -34,6 +34,7 @@ def download():
     return make_response({'error': 'empty payload', 'src': '/download'}, 404)
 
   download_location =  download_comic(payload)
+
   return send_file(f'../{download_location}')
 
 
