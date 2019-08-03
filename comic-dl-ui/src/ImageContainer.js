@@ -76,11 +76,12 @@ class ImageContainer extends Component {
 
     this.setState({imageLinks: imagesToRemove})
   }
-
+  handleDelete = () => {
+    fetch('http://localhost:56029/api/remove_temp')
+  }
   handleSubmit = async() => {
-    const { comicName, filename, filetype, issueNumber } = this.props;
+    const { comicName, filename, filetype, issueNumber, initialize } = this.props;
     const { imageLinks } = this.state;
-
     const payload = {
       "comic_name"   :  comicName,
       'filename'     :  filename,
@@ -97,10 +98,11 @@ class ImageContainer extends Component {
       })
       const data = await response.blob()
       downloadFile(data, filename);
+
+      initialize();
     }
-    catch(e) {
-      print('error: ', e)
-    }
+    catch(e) { print('error: ', e); }
+    finally  { this.handleDelete(); }
 
   }
 

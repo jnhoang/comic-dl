@@ -61,7 +61,7 @@ class App extends Component {
 
   render = () => {
     const {comicName, filename, filetype, imageLinks, issueNumber} = this.state;
-
+    const initialize = this.initialize;
     return (
 
       <Container>
@@ -95,6 +95,7 @@ class App extends Component {
             imageLinks  =  {imageLinks}
             filename    =  {filename}
             filetype    =  {filetype}
+            initialize  =  {initialize}
             issueNumber =  {issueNumber} />
         )}
       </Container>

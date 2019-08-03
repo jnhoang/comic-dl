@@ -3,10 +3,11 @@ from flask import Blueprint, request, make_response, send_file
 from comic_downloader.run import run
 import requests
 
-from ui_api.controller import get_comic_info, download_comic
+from ui_api.controller            import get_comic_info, download_comic
+from comic_downloader.FileManager import FileManager
 
-
-routes = Blueprint('routes', __name__)
+routes       =  Blueprint('routes', __name__)
+file_manager =  FileManager()
 
 
 @routes.route("/api/")
@@ -39,6 +40,11 @@ def download():
 
 
 # TODO - ADD DELETE ROUTE
+@routes.route('/api/remove_temp', methods=['GET'])
+def remove_temp():
+  file_manager.remove_temp_dir()
+  print('removed')
+  return make_response('works', 200)
 
 
 # @routes.route('/dl-direct', methods=['POST'])
