@@ -1,12 +1,9 @@
 import React, {Component} from 'react';
 import Container      from 'react-bootstrap/Container'
 import InputGroup     from 'react-bootstrap/InputGroup'
-import DropdownButton from 'react-bootstrap/DropdownButton'
-import Dropdown       from 'react-bootstrap/Dropdown'
 import Form           from 'react-bootstrap/Form'
-import FormGroup      from 'react-bootstrap/FormGroup'
 import FormControl    from 'react-bootstrap/FormControl'
-import Col    from 'react-bootstrap/Col'
+import Col            from 'react-bootstrap/Col'
 
 import ImageContainer from './ImageContainer'
 import AccetableSites from './components/AcceptableSites'
@@ -37,7 +34,7 @@ class App extends Component {
   }
 
   handleSearch = async() => {
-    const { comicLink, filetype }  =  this.state;
+    const { comicLink, filetype, imageLinks } =  this.state;
     const payload = {
       filetype,
       comic_link : comicLink
@@ -54,23 +51,18 @@ class App extends Component {
       url         :  comicLink,
       comicName   :  data.comic_name,
       filename    :  data.filename,
-      filetype    :  filetype,
-      imageLinks  :  data.image_links,
+      imageLinks  :  [ ...imageLinks, ...data.image_links ],
       issueNumber :  data.issue_number,
+      comicLink   : '',
     })
   }
 
-  handleChange = (event) => {
-    this.setState({comicLink: event.target.value})
-  }
-
-  handleFiletypeChange = (event) => {
-    this.setState({filetype: event.target.id})
-  }
+  handleChange         =  (event) => this.setState({comicLink: event.target.value});
+  handleFiletypeChange =  (event) => this.setState({filetype: event.target.id});
 
   render = () => {
-    const {comicName, filename, filetype, imageLinks, issueNumber} = this.state;
-    const initialize = this.initialize;
+    const { comicName, filename, filetype, imageLinks, issueNumber } = this.state;
+    const { initialize, handleFiletypeChange, handleChange, handleSearch } = this;
     return (
 
       <Container>
@@ -79,32 +71,32 @@ class App extends Component {
             <AccetableSites />
             <Form>
               <Form.Row className="align-items-center">
-                <Col xs={3} lg={2}>
+                <div>
                   <Form.Check
                     defaultChecked
                     inline
-                    onChange={this.handleFiletypeChange}
+                    onChange={handleFiletypeChange}
                     type  =  "radio"
                     label =  "cbz"
                     name  =  "formRadios"
                     id    =  "cbz" />
                   <Form.Check
                     inline
-                    onChange={this.handleFiletypeChange}
+                    onChange={handleFiletypeChange}
                     type  =  "radio"
                     label =  "pdf"
                     name  =  "formRadios"
                     id    =  "pdf" />
-                </Col>
+                </div>
 
                 <Col xs={9} lg={10}>
                   <InputGroup>
                     <FormControl
-                      onChange    =  {this.handleChange}
+                      onChange    =  {handleChange}
                       placeholder =  "Paste URL here from acceptable site" />
 
                     <InputGroup.Append>
-                      <Button onClick={this.handleSearch} variant="outline-secondary">Get Images</Button>
+                      <Button onClick={handleSearch} variant="outline-secondary">Get Images</Button>
                     </InputGroup.Append>
                   </InputGroup>
                 </Col>
@@ -116,12 +108,14 @@ class App extends Component {
 
         {
           imageLinks.length > 0 && <ImageContainer
-            comicName   =  {comicName}
-            imageLinks  =  {imageLinks}
-            filename    =  {filename}
-            filetype    =  {filetype}
-            initialize  =  {initialize}
-            issueNumber =  {issueNumber} />
+            comicName    =  {comicName}
+            imageLinks   =  {imageLinks}
+            filename     =  {filename}
+            filetype     =  {filetype}
+            initialize   =  {initialize}
+            handleSearch =  {handleSearch}
+            handleChange =  {handleChange}
+            issueNumber  =  {issueNumber} />
         }
 
       </Container>

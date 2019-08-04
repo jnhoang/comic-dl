@@ -40,6 +40,19 @@ class ImageContainer extends Component {
   };
 
   componentDidMount = () => {
+    this.mapImageLinksToArray();
+  }
+
+  componentDidUpdate = (prevProps) => {
+    const prevImages  =  prevProps.imageLinks;
+    const newImages   =  this.props.imageLinks;
+
+    if (newImages.length > prevImages.length) {
+      this.mapImageLinksToArray();
+    }
+  }
+
+  mapImageLinksToArray = () => {
     const { imageLinks } =  this.props;
     const imagesToMapToState =  imageLinks.map( (link) => (
       {
@@ -137,6 +150,8 @@ class ImageContainer extends Component {
           handleRemove              =  {this.handleRemove}
           handleAddCoverImage       =  {this.handleAddCoverImage}
           isShowAddCoverInput       =  {isShowAddCoverInput}
+          handleSearch              =  {this.props.handleSearch}
+          handleChange              =  {this.props.handleChange}
           handleAddCoverInputChange =  {this.handleAddCoverInputChange} />
 
         <Row>

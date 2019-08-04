@@ -11,13 +11,28 @@ const ComicNavbar = ({
   isShowAddCoverInput,
   handleAddCoverImage,
   handleAddCoverInputChange,
+  handleSearch,
+  handleChange,
 }) => {
 
   return (
     <React.Fragment>
       <Navbar sticky="top">
         <Nav>
-          <Button className='btn-danger mr-5' onClick={handleRemove}>Remove Panels</Button> <Button className='btn-success'     onClick={handleDownload}>Download</Button>
+          <Button className='btn-danger mr-2' onClick={handleRemove}>Remove Panels</Button>
+          <Button className='btn-success'     onClick={handleDownload}>Download</Button>
+          <div>
+            <InputGroup className="ml-2">
+              <FormControl placeholder="add chapter" onChange={handleChange} />
+              <InputGroup.Append>
+                <Button
+                  onClick={handleSearch}
+                  variant="dark">
+                  Add
+                </Button>
+              </InputGroup.Append>
+            </InputGroup>
+          </div>
         </Nav>
       </Navbar>
 
