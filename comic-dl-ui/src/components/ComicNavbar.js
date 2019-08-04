@@ -17,8 +17,7 @@ const ComicNavbar = ({
     <React.Fragment>
       <Navbar sticky="top">
         <Nav>
-          <Button className='btn-danger mr-5' onClick={handleRemove}>Remove Panels</Button>
-          <Button className='btn-success'     onClick={handleDownload}>Download</Button>
+          <Button className='btn-danger mr-5' onClick={handleRemove}>Remove Panels</Button> <Button className='btn-success'     onClick={handleDownload}>Download</Button>
         </Nav>
       </Navbar>
 
