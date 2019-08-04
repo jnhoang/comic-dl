@@ -25,12 +25,19 @@ const ADD_NEW_BOX_STYLE =  {
   'borderRadius'    :  '4px',
   'outline'         :  '1px solid #dee2e6',
   'height'          :  '230px',
-  'width'           :  '150px'
+  'width'           :  '150px',
+
+  ':hover'          :  { cursor :  'pointer' }
 };
 
 
 class ImageContainer extends Component {
-  state = { 'imageLinks' :  [] };
+  state = {
+    'imageLinks'          :  [],
+    'customImageCover'    :  '',
+    'isShowAddCoverInput' :  false,
+    'isShowAddCoverBtn'   :  true,
+  };
 
   componentDidMount = () => {
     const { imageLinks } =  this.props;
@@ -45,8 +52,6 @@ class ImageContainer extends Component {
     this.setState({ imageLinks: imagesToMapToState });
   }
 
-
-
   handleClick = (i) => {
     const { imageLinks }  =  this.state;
     const oldStyle        =  imageLinks[i].iconStyle;
@@ -56,7 +61,6 @@ class ImageContainer extends Component {
     imageLinks[i].selected  =  !imageLinks[i].selected;
     this.setState({ imageLinks })
   }
-
 
   handleMousePassage = (i, newColor, ignoreColor) => {
     const { imageLinks } =  this.state;
@@ -76,10 +80,10 @@ class ImageContainer extends Component {
 
     this.setState({imageLinks: imagesToRemove})
   }
-  handleDelete = () => {
-    fetch('http://localhost:56029/api/remove_temp')
-  }
-  handleSubmit = async() => {
+
+  handleDelete = () => fetch('http://localhost:56029/api/remove_temp');
+
+  handleDownload = async() => {
     const { comicName, filename, filetype, issueNumber, initialize } = this.props;
     const { imageLinks } = this.state;
     const payload = {
@@ -106,22 +110,41 @@ class ImageContainer extends Component {
 
   }
 
+  handleClickCustomCover = () => this.setState({isShowAddCoverInput: true});
+
+  handleAddCoverImage = () => {
+    const {customImageCover, imageLinks} = this.state;
+    const newCover = {
+      'url'       :  customImageCover,
+      'iconStyle' :  ICON_STYLE,
+      'selected'  :  false,
+    }
+    this.setState({
+      isShowAddCoverBtn   :  false,
+      imageLinks          :  [ newCover, ...imageLinks ],
+      isShowAddCoverInput :  false
+    })
+  }
+  handleAddCoverInputChange = (event) => this.setState({'customImageCover': event.target.value});
+
   render = () => {
-    const { imageLinks } = this.state;
+    const { imageLinks, isShowAddCoverInput, isShowAddCoverBtn } = this.state;
     return (
       <div>
 
         <ComicNavbar
-          handleSubmit={this.handleSubmit}
-          handleRemove={this.handleRemove} />
+          handleDownload            =  {this.handleDownload}
+          handleRemove              =  {this.handleRemove}
+          handleAddCoverImage       =  {this.handleAddCoverImage}
+          isShowAddCoverInput       =  {isShowAddCoverInput}
+          handleAddCoverInputChange =  {this.handleAddCoverInputChange} />
 
         <Row>
-          <Col
-            xs={12}  sm={4}  md={3}
-            style     =  {ADD_NEW_BOX_STYLE}
-            className =  "d-flex align-items-center justify-content-center flex-column flex-wrap" >
-            <FontAwesomeIcon icon={faPlusCircle} />
-            <span style={{'paddingTop': '5px'}}>add cover page</span>
+          <Col xs={12} sm={4} md={3} onClick={this.handleClickCustomCover} style= {{ display: isShowAddCoverBtn ? 'block' : 'none'}}>
+            <div style={ADD_NEW_BOX_STYLE} className ="d-flex align-items-center justify-content-center flex-column flex-wrap">
+              <FontAwesomeIcon icon={faPlusCircle} />
+              <span style={{'paddingTop': '5px'}}>add cover page</span>
+            </div>
           </Col>
 
           {
@@ -137,7 +160,6 @@ class ImageContainer extends Component {
             ))
           }
         </Row>
-
       </div>
     );
   }

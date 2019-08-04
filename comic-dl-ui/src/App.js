@@ -89,15 +89,24 @@ class App extends Component {
         )}
 
 
-        { imageLinks.length > 0 && (
-          <ImageContainer
+        {
+          imageLinks.length > 0 && <ImageContainer
             comicName   =  {comicName}
             imageLinks  =  {imageLinks}
             filename    =  {filename}
             filetype    =  {filetype}
             initialize  =  {initialize}
             issueNumber =  {issueNumber} />
-        )}
+        }
+         { //imageLinks.length > 0 && (
+        //   <ImageContainer
+        //     comicName   =  {comicName}
+        //     imageLinks  =  {imageLinks}
+        //     filename    =  {filename}
+        //     filetype    =  {filetype}
+        //     initialize  =  {initialize}
+        //     issueNumber =  {issueNumber} />
+        /* ) */ }
       </Container>
     )
   }

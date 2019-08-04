@@ -1,7 +1,7 @@
 import React  from 'react';
 import Image  from 'react-bootstrap/Image'
 import Col    from 'react-bootstrap/Col'
-import { faTimesCircle }     from '@fortawesome/free-solid-svg-icons'
+import { faTimesCircle }    from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon }  from "@fortawesome/react-fontawesome";
 
 const ImageElement = ({
