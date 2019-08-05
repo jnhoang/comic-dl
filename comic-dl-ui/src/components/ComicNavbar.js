@@ -17,17 +17,17 @@ const ComicNavbar = ({
 
   return (
     <React.Fragment>
-      <Navbar sticky="top">
-        <Nav>
-          <Button className='btn-danger mr-2' onClick={handleRemove}>Remove Panels</Button>
-          <Button className='btn-success'     onClick={handleDownload}>Download</Button>
+      <Navbar sticky="top" variant="light" bg="light">
+        <Nav >
+          <Button variant="outline-danger" className="mr-2" onClick={handleRemove}>Remove Panels</Button>
+          <Button variant="outline-info"   className="mr-2" onClick={handleDownload}>Download</Button>
           <div>
-            <InputGroup className="ml-2">
+            <InputGroup>
               <FormControl placeholder="add chapter" onChange={handleChange} />
               <InputGroup.Append>
                 <Button
                   onClick={handleSearch}
-                  variant="dark">
+                  variant="outline-dark">
                   Add
                 </Button>
               </InputGroup.Append>
